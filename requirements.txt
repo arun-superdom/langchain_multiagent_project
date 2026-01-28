@@ -1,0 +1,20 @@
+# Core LangChain packages for RAG
+langchain==1.2.6
+langchain-core==1.2.7
+langchain-community==0.4.1
+langchain-openai==1.1.7
+langchain_mcp_adapters==0.2.1
+langchain-tavily==0.2.17
+
+# OpenAI API client (required for langchain-openai)
+openai>=1.58.1
+
+# Environment variables
+python-dotenv==1.0.1
+
+# Token counting for OpenAI
+tiktoken==0.12.0
+
+# Required dependencies
+pydantic>=2.0
+numpy>=2.1.0
