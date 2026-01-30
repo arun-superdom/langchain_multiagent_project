@@ -1,3 +1,5 @@
+# with tavily search tool integrated into the writer agent
+
 import os
 from langchain.agents import create_agent
 from langchain.messages import HumanMessage
@@ -27,7 +29,7 @@ print("Writer Agent with search tool created successfully.")
 
 # Editor Agent (no changes)
 editor_agent = create_agent(
-    model="gpt-5.2",
+    model="gpt-4o-mini",
     system_prompt="You are a meticulous editor, skilled at refining and enhancing written content",
 )
 

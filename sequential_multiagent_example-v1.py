@@ -1,3 +1,5 @@
+# multi-agent sequential processing example using LangChain
+
 import os
 # pip install -qU langchain "langchain[openai]"
 from langchain.agents import create_agent
