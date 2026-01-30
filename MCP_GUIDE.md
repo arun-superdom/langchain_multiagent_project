@@ -1,7 +1,4 @@
 
-
-
-
 # Model Context Protocol (MCP) Guide
 
 ## Introduction
@@ -45,18 +42,40 @@ Transports define how clients and servers communicate:
 - Communication via standard input/output streams
 - Ideal for development and local tool execution
 - Transport: `"stdio"`
+- **Server Management**: The MCP client **automatically starts the server process** when you create a session. No manual server startup needed.
+- **Example Configuration**:
+  ```python
+  "weather-server": {
+      "transport": "stdio",
+      "command": "uv",  # or "python"
+      "args": ["run", "python", "/path/to/server.py"],
+  }
+  ```
+  When you call `client.session("weather-server")`, the client runs the command and manages the process automatically.
 
 ### 2. SSE (Server-Sent Events) - Deprecated
 - HTTP-based transport for remote connections
 - Server pushes updates to clients
 - Limited bidirectional communication
 - Transport: `"http"`
+- **Server Management**: The server must be manually started before the client connects
+- **Note**: This transport is deprecated in favor of Streamable HTTP
 
 ### 3. Streamable HTTP - Recommended
 - Modern HTTP transport for remote connections
 - Full bidirectional streaming
 - Better performance and reliability
 - Transport: `"streamable_http"`
+- **Server Management**: The server must already be running at the specified URL. The client connects to it via HTTP.
+- **Example Configuration**:
+  ```python
+  "tavily": {
+      "transport": "streamable_http",
+      "url": "https://mcp.tavily.com/mcp/?tavilyApiKey=YOUR_KEY",
+      "headers": {"DEFAULT_PARAMETERS": '{"search_depth":"advanced"}'}
+  }
+  ```
+  The server at the URL must be running and accessible before the client connects.
 
 ## Building an MCP Server
 
@@ -65,6 +84,8 @@ Transports define how clients and servers communicate:
 - MCP SDK or framework
 - Tool definitions with proper schemas
 - Transport configuration
+- **For stdio**: Python/Node executable that can be launched by the client
+- **For HTTP/Streamable HTTP**: Running server accessible at a network URL
 
 ### Server Structure
 A typical MCP server includes:
@@ -156,12 +177,63 @@ Some notable official MCP servers include:
 - **Atlassian MCP Server**: Jira and Confluence integration
 - **Tavily MCP Server**: Web search and content retrieval
 
-## Getting Started
+### Quick Decision: Which Transport to Use?
 
-1. **Choose Your Language**: Select a supported programming language
-2. **Install MCP SDK**: Use the appropriate SDK for your language
-3. **Define Your Tools**: Plan what functionality to expose
-4. **Implement Transport**: Configure the connection method
+| Transport | When to Use | Server Management | Best For |
+|-----------|------------|-------------------|----------|
+| **stdio** | Local development and testing | Auto-started by client | Custom local tools |
+| **Streamable HTTP** | Production, remote servers | Must be running | Public APIs, cloud services |
+| **SSE** | Legacy systems | Must be running | Deprecated (avoid new projects) |
+
+### For stdio Transport (Local Development)
+1. **No need to manually start the server** - The client handles this
+2. Specify the command to run your server in the configuration
+3. The client will:
+   - Execute the command when `client.session()` is called
+   - Manage the process automatically
+   - Clean up when the session closes
+
+Example:
+```python
+client = MultiServerMCPClient({
+    "my-server": {
+        "transport": "stdio",
+        "command": "python",
+        "args": ["/path/to/server.py"]
+    }
+})
+
+async with client.session("my-server") as session:
+    # Client automatically starts "/path/to/server.py"
+    # Server is running during the async context
+    tools = await load_mcp_tools(session)
+    # Server is automatically stopped when context exits
+```
+
+### For Streamable HTTP Transport (Remote Servers)
+1. **The server MUST be running before** the client attempts to connect
+2. Verify the server is accessible at the specified URL
+3. Handle connection timeouts and network errors gracefully
+
+Example:
+```python
+client = MultiServerMCPClient({
+    "remote-api": {
+        "transport": "streamable_http",
+        "url": "https://api.example.com/mcp",
+        "headers": {"Authorization": "Bearer TOKEN"}
+    }
+})
+
+# Important: The server at https://api.example.com/mcp must be running!
+async with client.session("remote-api") as session:
+    tools = await load_mcp_tools(session)
+    # Connect to the running server
+```
+
+### Getting Started
+
+### Quick Decision: Which Transport to Use?
 5. **Test Locally**: Use stdio transport for initial testing
 6. **Deploy Securely**: Implement security measures for production
 
