@@ -1,5 +1,6 @@
 # Example using MCP and Observability features (LangSmith)
-
+# langchain and langgraph integrate by default with LangSmith for logging and tracing.
+# all you need is env variables (refer .env.example)
 
 import os
 import asyncio

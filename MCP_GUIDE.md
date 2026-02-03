@@ -35,6 +35,7 @@ Transports define how clients and servers communicate:
 - **SSE (Server-Sent Events)**: HTTP-based transport for remote connections (deprecated)
 - **Streamable HTTP**: Modern HTTP transport for remote connections (recommended)
 
+
 ## Connection Models
 
 ### 1. stdio (Local Machine)
@@ -100,6 +101,8 @@ Each tool must have:
 - **Description**: Clear explanation of what the tool does
 - **Parameters**: Input schema (if any)
 - **Return Data**: Output format and structure
+
+## LINK to Demo MCP Server Project: https://github.com/arunprabu/mcp-server-demo-ces
 
 ## Example: Custom LinkedIn MCP Server
 
@@ -249,6 +252,7 @@ async with client.session("remote-api") as session:
 MCP represents a significant advancement in AI tool integration, providing a standardized, secure way for AI agents to access external capabilities. By following this guide, developers can build powerful MCP servers that extend AI functionality while maintaining security and reliability.
 
 Whether you're building custom tools for specific domains or integrating with existing services, MCP offers a flexible framework for AI-powered automation and intelligence.
+
 
 
 
